@@ -1,13 +1,19 @@
 'use strict'
 
-const url = require('url')
-const axios = require('axios')
-const _ = require('lodash')
+import axios from 'axios'
+import _ from 'lodash'
 
-module.exports = class CDO {
+export default class CDO {
   constructor (token) {
     this.token = token
   }
+
+  datasets (params={}) { return this.request('datasets', {params}) }
+  dataset (id) { return this.request(`datasets/${id}`) }
+
+  datacategories (params={}) { return this.request('datacategories', {params}) }
+  datacategory (id) { return this.request(`datacategories/${id}`) }
+
   request (resource, config) {
     return axios(resource, _.merge({
       baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
