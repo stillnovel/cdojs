@@ -5,9 +5,13 @@
   "homepage": "https://github.com/dbkaplun/cdojs#readme",
   "bugs": "https://github.com/dbkaplun/cdojs/issues",
   "repository": "dbkaplun/cdojs",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "0.9.1",
+    "lodash": "4.6.1"
   },
   "keywords": [
     "NOAA",
