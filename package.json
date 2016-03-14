@@ -1,0 +1,28 @@
+{
+  "name": "cdojs",
+  "version": "1.0.0",
+  "description": "JS wrapper for NCEI's Climate Data Online API",
+  "homepage": "https://github.com/dbkaplun/cdojs#readme",
+  "bugs": "https://github.com/dbkaplun/cdojs/issues",
+  "repository": "dbkaplun/cdojs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "NOAA",
+    "NCEI",
+    "NCDC",
+    "CDO",
+    "API",
+    "climate",
+    "data",
+    "historical",
+    "weather",
+    "forecast",
+    "station",
+    "temperature"
+  ],
+  "author": "Dan Kaplun <dbkaplun@gmail.com>",
+  "license": "MIT"
+}
