@@ -14,6 +14,10 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _rateLimitPromise = require('rate-limit-promise');
+
+var _rateLimitPromise2 = _interopRequireDefault(_rateLimitPromise);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23,6 +27,9 @@ var CDO = function () {
     _classCallCheck(this, CDO);
 
     this.token = token;
+
+    this.secondLimiter = (0, _rateLimitPromise2.default)(5, 1000);
+    this.dayLimiter = (0, _rateLimitPromise2.default)(1000, 1000 * 60 * 60 * 24);
   }
 
   _createClass(CDO, [{
@@ -50,10 +57,14 @@ var CDO = function () {
   }, {
     key: 'request',
     value: function request(resource, config) {
-      return (0, _axios2.default)(resource, _lodash2.default.merge({
-        baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
-        headers: { token: this.token }
-      }, config)).then(function (res) {
+      var _this = this;
+
+      return Promise.all([this.secondLimiter(), this.dayLimiter()]).then(function () {
+        return (0, _axios2.default)(resource, _lodash2.default.merge({
+          baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
+          headers: { token: _this.token }
+        }, config));
+      }).then(function (res) {
         return res.data;
       });
     }
