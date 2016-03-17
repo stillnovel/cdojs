@@ -66,6 +66,9 @@ var CDO = function () {
         }, config));
       }).then(function (res) {
         return res.data;
+      }).catch(function (res) {
+        if (res.status === 429) return _this.request(resource, config); // rate limited, try again
+        throw res;
       });
     }
   }]);

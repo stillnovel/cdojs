@@ -26,5 +26,9 @@ export default class CDO {
         headers: {token: this.token}
       }, config)))
       .then(res => res.data)
+      .catch(res => {
+        if (res.status === 429) return this.request(resource, config) // rate limited, try again
+        throw res
+      })
   }
 }
