@@ -8,8 +8,8 @@ export default class CDO {
   constructor (token) {
     this.token = token
 
-    this.secondLimiter = rateLimit(5, 1000)
-    this.dayLimiter = rateLimit(1000, 1000*60*60*24)
+    this.secondLimiter = rateLimit(5, 1000 + CDO.RATE_LIMIT_EPSILON_MS)
+    this.dayLimiter = rateLimit(1000, 1000*60*60*24 + CDO.RATE_LIMIT_EPSILON_MS)
   }
 
   datasets (params={}) { return this.request('datasets', {params}) }
@@ -32,3 +32,4 @@ export default class CDO {
       })
   }
 }
+CDO.RATE_LIMIT_EPSILON_MS = 200

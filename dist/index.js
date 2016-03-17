@@ -28,8 +28,8 @@ var CDO = function () {
 
     this.token = token;
 
-    this.secondLimiter = (0, _rateLimitPromise2.default)(5, 1000);
-    this.dayLimiter = (0, _rateLimitPromise2.default)(1000, 1000 * 60 * 60 * 24);
+    this.secondLimiter = (0, _rateLimitPromise2.default)(5, 1000 + CDO.RATE_LIMIT_EPSILON_MS);
+    this.dayLimiter = (0, _rateLimitPromise2.default)(1000, 1000 * 60 * 60 * 24 + CDO.RATE_LIMIT_EPSILON_MS);
   }
 
   _createClass(CDO, [{
@@ -77,3 +77,5 @@ var CDO = function () {
 }();
 
 exports.default = CDO;
+
+CDO.RATE_LIMIT_EPSILON_MS = 200;
