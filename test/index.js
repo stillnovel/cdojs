@@ -7,38 +7,46 @@ import CDO from '..'
 
 import config from './config'
 
-const client = new CDO(config.token, config.config)
+const client = new CDO(config.token, config.opts)
 
-function testUnpaginated (t, ress) {
-  let items = ress.reduce((items, {results}) => [...items, ...results], [])
-  ress.forEach(res => {
-    t.is(items.length, res.metadata.resultset.count)
-  })
-  return items
+function getList (client, method, ...args) {
+  return client
+    .unpaginate(method, ...args)
+    .then(ress => {
+      let items = ress.reduce((items, res) => [...items, ..._.get(res, 'results', [])], [])
+      ress.forEach(res => {
+        if (items.length !== res.metadata.resultset.count) throw new Error(`${items.length} !== ${res.metadata.resultset.count}`)
+      })
+      return items
+    })
 }
 
 test("CDO#datasets", t => (
-  client.unpaginate('datasets')
-    .then(ress => testUnpaginated(t, ress))
-    .then(datasets => {
-      console.log('datasets', datasets)
-      return Promise.all(datasets.map(dataset => (
-        client.dataset(dataset.id).then(d => {
-          t.same(d, _.omit(dataset, 'uid'))
-        })
-      )))
-    })
+  getList(client, 'datasets').then(datasets => (
+    Promise.all(datasets.map(dataset => (
+      client.dataset(dataset.id).then(d => {
+        t.same(d, _.omit(dataset, 'uid'))
+      })
+    )))
+  ))
 ))
 
 test("CDO#datacategories", t => (
-  client.unpaginate('datacategories')
-    .then(ress => testUnpaginated(t, ress))
-    .then(datacategories => {
-      console.log('datacategories', datacategories)
-      return Promise.all(datacategories.map(datacategory => (
-        client.datacategory(datacategory.id).then(d => {
-          t.same(d, datacategory)
-        })
-      )))
-    })
+  getList(client, 'datacategories').then(datacategories => (
+    Promise.all(datacategories.map(datacategory => (
+      client.datacategory(datacategory.id).then(d => {
+        t.same(d, datacategory)
+      })
+    )))
+  ))
+))
+
+test("CDO#datatypes", t => (
+  getList(client, 'datatypes').then(datatypes => {
+    return Promise.all(datatypes.map(datatype => (
+      client.datatypes(datatype.id).then(d => {
+        t.same(d, datatype)
+      })
+    )))
+  })
 ))

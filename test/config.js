@@ -6,5 +6,8 @@ catch (e) { local = {} }
 
 export default _.merge({
   token: null, // set this to the CDO token in your email
-  config: {} // default config passed to axios
+  opts: {
+    debug: true,
+    config: {} // default config passed to axios
+  }
 }, local)
