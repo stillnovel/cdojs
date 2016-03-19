@@ -21,7 +21,7 @@ function getList (client, method, ...args) {
     })
 }
 
-test("CDO#datasets", t => (
+test("/datasets", t => (
   getList(client, 'datasets').then(datasets => (
     Promise.all(datasets.map(dataset => (
       client.dataset(dataset.id).then(d => {
@@ -31,7 +31,7 @@ test("CDO#datasets", t => (
   ))
 ))
 
-test("CDO#datacategories", t => (
+test("/datacategories", t => (
   getList(client, 'datacategories').then(datacategories => (
     Promise.all(datacategories.map(datacategory => (
       client.datacategory(datacategory.id).then(d => {
@@ -41,11 +41,11 @@ test("CDO#datacategories", t => (
   ))
 ))
 
-test("CDO#datatypes", t => (
+test("/datatypes", t => (
   getList(client, 'datatypes').then(datatypes => {
     return Promise.all(datatypes.map(datatype => (
-      client.datatypes(datatype.id).then(d => {
-        t.same(d, datatype)
+      client.datatype(datatype.id).then(d => {
+        t.same(d, _.omit(datatype, 'name'))
       })
     )))
   })

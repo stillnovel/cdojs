@@ -8,6 +8,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _querystring = require('querystring');
+
+var _querystring2 = _interopRequireDefault(_querystring);
+
 var _axios = require('axios');
 
 var _axios2 = _interopRequireDefault(_axios);
@@ -79,13 +83,15 @@ var CDO = function () {
     }
   }, {
     key: 'unpaginate',
-    value: function unpaginate(method, params) {
+    value: function unpaginate(method) {
       for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
         args[_key - 2] = arguments[_key];
       }
 
       var _method,
           _this = this;
+
+      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       if (typeof method === 'string') method = _lodash2.default.get(this, method);
       return (_method = method).call.apply(_method, [this, params].concat(args)).then(function (res) {
@@ -102,19 +108,30 @@ var CDO = function () {
     }
   }, {
     key: 'request',
-    value: function request(resource, config) {
+    value: function request(resource) {
       var _this2 = this;
 
+      var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var readableURL = '/' + resource + (_lodash2.default.isEmpty(config.params) ? '' : ' ') + _querystring2.default.stringify(config.params);
       return Promise.all([this.secondLimiter(), this.dayLimiter()]).then(function () {
         return (0, _axios2.default)(resource, _lodash2.default.merge({
           baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
           headers: { token: _this2.token }
         }, _this2.opts.config, config));
       }).catch(function (res) {
-        if (res.status === 429) return _this2.request(resource, config); // rate limited, try again
+        var status = res.status;
+        var statusText = res.statusText;
+
+        if (_this2.opts.debug) console.error(readableURL + ' (' + status + ' ' + statusText + ')');
+        if (status === 429) return _this2.request(resource, config); // rate limited, try again
         throw res;
       }).then(function (_ref) {
+        var status = _ref.status;
+        var statusText = _ref.statusText;
         var data = _ref.data;
+
+        if (_this2.opts.debug) console.error(readableURL + ' (' + status + ' ' + statusText + ')');
         return data;
       });
     }

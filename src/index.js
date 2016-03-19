@@ -1,5 +1,6 @@
 'use strict'
 
+import qs from 'querystring'
 import axios from 'axios'
 import _ from 'lodash'
 import rateLimit from 'rate-limit-promise'
@@ -21,7 +22,7 @@ export default class CDO {
   datatypes (params={}, config={}) { return this.request('datatypes', {params, ...config}) }
   datatype (id, config={}) { return this.request(`datatypes/${id}`, config) }
 
-  unpaginate (method, params, ...args) {
+  unpaginate (method, params={}, ...args) {
     if (typeof method === 'string') method = _.get(this, method)
     return method.call(this, params, ...args).then(res => {
       let {offset, count, limit} = res.metadata.resultset
@@ -35,7 +36,8 @@ export default class CDO {
     })
   }
 
-  request (resource, config) {
+  request (resource, config={}) {
+    let readableURL = `/${resource}${_.isEmpty(config.params)?'':' '}${qs.stringify(config.params)}`
     return Promise
       .all([this.secondLimiter(), this.dayLimiter()])
       .then(() => axios(resource, _.merge({
@@ -43,10 +45,15 @@ export default class CDO {
         headers: {token: this.token}
       }, this.opts.config, config)))
       .catch(res => {
-        if (res.status === 429) return this.request(resource, config) // rate limited, try again
+        let {status, statusText} = res
+        if (this.opts.debug) console.error(`${readableURL} (${status} ${statusText})`)
+        if (status === 429) return this.request(resource, config) // rate limited, try again
         throw res
       })
-      .then(({data}) => data)
+      .then(({status, statusText, data}) => {
+        if (this.opts.debug) console.error(`${readableURL} (${status} ${statusText})`)
+        return data
+      })
   }
 }
 CDO.RATE_LIMIT_EPSILON_MS = 200
