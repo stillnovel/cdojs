@@ -1,10 +1,12 @@
-import _ from 'lodash'
+'use strict'
+
+const _ = require('lodash')
 
 let local
 try       { local = require('./local') }
 catch (e) { local = {} }
 
-export default _.merge({
+module.exports = _.merge({
   token: null, // set this to the CDO token in your email
   opts: {
     debug: true,

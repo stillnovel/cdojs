@@ -1,6 +1,5 @@
 'use strict'
 
-import 'babel-register'
 import test from 'ava'
 import _ from 'lodash'
 import CDO from '..'
