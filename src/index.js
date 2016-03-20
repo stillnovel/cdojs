@@ -22,6 +22,17 @@ export default class CDO {
   datatypes (params={}, config={}) { return this.request('datatypes', {params, ...config}) }
   datatype (id, config={}) { return this.request(`datatypes/${id}`, config) }
 
+  locationcategories (params={}, config={}) { return this.request('locationcategories', {params, ...config}) }
+  locationcategory (id, config={}) { return this.request(`locationcategories/${id}`, config) }
+
+  locations (params={}, config={}) { return this.request('locations', {params, ...config}) }
+  location (id, config={}) { return this.request(`locations/${id}`, config) }
+
+  stations (params={}, config={}) { return this.request('stations', {params, ...config}) }
+  station (id, config={}) { return this.request(`stations/${id}`, config) }
+
+  data (params={}, config={}) { return this.request('data', {params, ...config}) }
+
   unpaginate (method, params={}, ...args) {
     if (typeof method === 'string') method = _.get(this, method)
     return method.call(this, params, ...args).then(res => {

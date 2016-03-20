@@ -82,6 +82,52 @@ var CDO = function () {
       return this.request('datatypes/' + id, config);
     }
   }, {
+    key: 'locationcategories',
+    value: function locationcategories() {
+      var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      return this.request('locationcategories', _extends({ params: params }, config));
+    }
+  }, {
+    key: 'locationcategory',
+    value: function locationcategory(id) {
+      var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      return this.request('locationcategories/' + id, config);
+    }
+  }, {
+    key: 'locations',
+    value: function locations() {
+      var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      return this.request('locations', _extends({ params: params }, config));
+    }
+  }, {
+    key: 'location',
+    value: function location(id) {
+      var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      return this.request('locations/' + id, config);
+    }
+  }, {
+    key: 'stations',
+    value: function stations() {
+      var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      return this.request('stations', _extends({ params: params }, config));
+    }
+  }, {
+    key: 'station',
+    value: function station(id) {
+      var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      return this.request('stations/' + id, config);
+    }
+  }, {
+    key: 'data',
+    value: function data() {
+      var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      return this.request('data', _extends({ params: params }, config));
+    }
+  }, {
     key: 'unpaginate',
     value: function unpaginate(method) {
       for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
