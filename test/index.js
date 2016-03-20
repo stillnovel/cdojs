@@ -9,44 +9,35 @@ import config from './config'
 
 const client = new CDO(config.token, config.opts)
 
-function getList (client, method, ...args) {
-  return client
-    .unpaginate(method, ...args)
-    .then(ress => {
-      let items = ress.reduce((items, res) => [...items, ..._.get(res, 'results', [])], [])
-      ress.forEach(res => {
-        if (items.length !== res.metadata.resultset.count) throw new Error(`${items.length} !== ${res.metadata.resultset.count}`)
-      })
-      return items
+test("CDO#unpaginate", t => (
+  client.unpaginate('datatypes').then(ress => {
+    let items = ress.reduce((items, {results}) => [...items, ...results], [])
+    ress.forEach(res => {
+      t.is(items.length, res.metadata.resultset.count)
     })
-}
+  })
+))
 
 test("/datasets", t => (
-  getList(client, 'datasets').then(datasets => (
-    Promise.all(datasets.map(dataset => (
-      client.dataset(dataset.id).then(d => {
-        t.same(d, _.omit(dataset, 'uid'))
-      })
-    )))
+  client.datasets().then(({results}) => (
+    client.dataset(results[0].id).then(d => {
+      t.same(d, _.omit(results[0], 'uid'))
+    })
   ))
 ))
 
 test("/datacategories", t => (
-  getList(client, 'datacategories').then(datacategories => (
-    Promise.all(datacategories.map(datacategory => (
-      client.datacategory(datacategory.id).then(d => {
-        t.same(d, datacategory)
-      })
-    )))
+  client.datacategories().then(({results}) => (
+    client.datacategory(results[0].id).then(d => {
+      t.same(d, results[0])
+    })
   ))
 ))
 
 test("/datatypes", t => (
-  getList(client, 'datatypes').then(datatypes => {
-    return Promise.all(datatypes.map(datatype => (
-      client.datatype(datatype.id).then(d => {
-        t.same(d, _.omit(datatype, 'name'))
-      })
-    )))
-  })
+  client.datatypes().then(({results}) => (
+    client.datatype(results[0].id).then(d => {
+      t.same(d, _.omit(results[0], 'name'))
+    })
+  ))
 ))
