@@ -51,17 +51,18 @@ class CDO {
   }
 
   request (resource, config={}) {
-    let readableURL = `/${resource}${_.isEmpty(config.params)?'':' '}${qs.stringify(config.params)}`
+    let mergedConfig = _.merge({
+      baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
+      headers: {token: this.token}
+    }, this.opts.config, config)
+    let readableURL = `/${resource}${_.isEmpty(mergedConfig.params)?'':' '}${qs.stringify(mergedConfig.params)}`
     return Promise
       .all([this.secondLimiter(), this.dayLimiter()])
-      .then(() => axios(resource, _.merge({
-        baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
-        headers: {token: this.token}
-      }, this.opts.config, config)))
+      .then(() => axios(resource, mergedConfig))
       .catch(res => {
         let {status, statusText} = res
         debug(`%s (%s %s)`, readableURL, status, statusText)
-        if (status === 429) return this.request(resource, config) // rate limited, try again
+        if (status === 429) return this.request.apply(this, arguments) // rate limited, try again
         throw res
       })
       .then(({status, statusText, data}) => {

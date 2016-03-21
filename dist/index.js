@@ -157,22 +157,24 @@ var CDO = function () {
   }, {
     key: 'request',
     value: function request(resource) {
-      var _this2 = this;
+      var _this2 = this,
+          _arguments = arguments;
 
       var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-      var readableURL = '/' + resource + (_lodash2.default.isEmpty(config.params) ? '' : ' ') + _querystring2.default.stringify(config.params);
+      var mergedConfig = _lodash2.default.merge({
+        baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
+        headers: { token: this.token }
+      }, this.opts.config, config);
+      var readableURL = '/' + resource + (_lodash2.default.isEmpty(mergedConfig.params) ? '' : ' ') + _querystring2.default.stringify(mergedConfig.params);
       return Promise.all([this.secondLimiter(), this.dayLimiter()]).then(function () {
-        return (0, _axios2.default)(resource, _lodash2.default.merge({
-          baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
-          headers: { token: _this2.token }
-        }, _this2.opts.config, config));
+        return (0, _axios2.default)(resource, mergedConfig);
       }).catch(function (res) {
         var status = res.status;
         var statusText = res.statusText;
 
         debug('%s (%s %s)', readableURL, status, statusText);
-        if (status === 429) return _this2.request(resource, config); // rate limited, try again
+        if (status === 429) return _this2.request.apply(_this2, _arguments); // rate limited, try again
         throw res;
       }).then(function (_ref) {
         var status = _ref.status;
