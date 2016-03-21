@@ -5,7 +5,7 @@ import axios from 'axios'
 import _ from 'lodash'
 import rateLimit from 'rate-limit-promise'
 
-export default class CDO {
+class CDO {
   constructor (token, opts={}) {
     this.token = token
     this.opts = _.merge({}, opts)
@@ -68,3 +68,5 @@ export default class CDO {
   }
 }
 CDO.RATE_LIMIT_EPSILON_MS = 200
+
+module.exports = CDO
