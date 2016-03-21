@@ -4,6 +4,9 @@ import qs from 'querystring'
 import axios from 'axios'
 import _ from 'lodash'
 import rateLimit from 'rate-limit-promise'
+import dbg from 'debug'
+
+const debug = dbg('CDO')
 
 class CDO {
   constructor (token, opts={}) {
@@ -57,12 +60,12 @@ class CDO {
       }, this.opts.config, config)))
       .catch(res => {
         let {status, statusText} = res
-        if (this.opts.debug) console.error(`${readableURL} (${status} ${statusText})`)
+        debug(`%s (%s %s)`, readableURL, status, statusText)
         if (status === 429) return this.request(resource, config) // rate limited, try again
         throw res
       })
       .then(({status, statusText, data}) => {
-        if (this.opts.debug) console.error(`${readableURL} (${status} ${statusText})`)
+        debug(`%s (%s %s)`, readableURL, status, statusText)
         return data
       })
   }

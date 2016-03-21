@@ -20,11 +20,17 @@ var _rateLimitPromise = require('rate-limit-promise');
 
 var _rateLimitPromise2 = _interopRequireDefault(_rateLimitPromise);
 
+var _debug = require('debug');
+
+var _debug2 = _interopRequireDefault(_debug);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var debug = (0, _debug2.default)('CDO');
 
 var CDO = function () {
   function CDO(token) {
@@ -165,7 +171,7 @@ var CDO = function () {
         var status = res.status;
         var statusText = res.statusText;
 
-        if (_this2.opts.debug) console.error(readableURL + ' (' + status + ' ' + statusText + ')');
+        debug('%s (%s %s)', readableURL, status, statusText);
         if (status === 429) return _this2.request(resource, config); // rate limited, try again
         throw res;
       }).then(function (_ref) {
@@ -173,7 +179,7 @@ var CDO = function () {
         var statusText = _ref.statusText;
         var data = _ref.data;
 
-        if (_this2.opts.debug) console.error(readableURL + ' (' + status + ' ' + statusText + ')');
+        debug('%s (%s %s)', readableURL, status, statusText);
         return data;
       });
     }
