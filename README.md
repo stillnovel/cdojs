@@ -25,9 +25,7 @@ client
 
 Retrieve every type of queryable temperature measurement: (56 at the time of writing)
 ```js
-client
-  .unpaginate('datatypes', {datacategoryid: 'TEMP'})
-  .then(console.log)
+client.page('datatypes', {datacategoryid: 'TEMP'}, console.log)
 ```
 
 Typical usage: fetch all stations for ZIP code, then fetch all temperatures
@@ -42,11 +40,14 @@ var client = new CDO('mytoken', {params: {
 }})
 
 // fetch all stations for ZIP code
+let results = []
 client
   .stations({locationid: 'ZIP:00002'}) // "Yukon Flats Nat Wildlife, AK 00002". Not all ZIPs have a station
   .then(stations => (
-    // fetch data from the first returned station
-    client.unpaginate('data', {stationid: stations.results[0].id})
+    client.page('data', {stationid: stations.results[0].id}, page => {
+      results = results.concat(page.results)
+      return false // return true to stop paging
+    })
   ))
-  .then(console.log)
+  .then(() => { console.log(results) })
 ```

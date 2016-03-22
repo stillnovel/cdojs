@@ -26,8 +26,6 @@ var _debug2 = _interopRequireDefault(_debug);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var debug = (0, _debug2.default)('CDO');
@@ -130,27 +128,29 @@ var CDO = function () {
       return this.request('data', _extends({ params: params }, config));
     }
   }, {
-    key: 'unpaginate',
-    value: function unpaginate(method) {
-      for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        args[_key - 2] = arguments[_key];
-      }
-
+    key: 'page',
+    value: function page(method /*, params={}*/) /*, iteratee */{
       var _method,
           _this = this;
 
-      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
 
+      var iteratee = args.pop();
+      var params = args.shift() || {};
       if (typeof method === 'string') method = _lodash2.default.get(this, method);
       return (_method = method).call.apply(_method, [this, params].concat(args)).then(function (res) {
-        var _res$metadata$results = res.metadata.resultset;
-        var offset = _res$metadata$results.offset;
-        var count = _res$metadata$results.count;
-        var limit = _res$metadata$results.limit;
+        return Promise.resolve(iteratee(res)).then(function (done) {
+          if (done) return res;
+          var _res$metadata$results = res.metadata.resultset;
+          var offset = _res$metadata$results.offset;
+          var count = _res$metadata$results.count;
+          var limit = _res$metadata$results.limit;
 
-        var nextOffset = offset + limit;
-        return Promise.resolve(nextOffset < count ? _this.unpaginate.apply(_this, [method, _lodash2.default.defaults({ limit: limit, offset: nextOffset }, params)].concat(args)) : []).then(function (nextRess) {
-          return [res].concat(_toConsumableArray(nextRess));
+          var nextOffset = offset + limit;
+          if (nextOffset >= count) return null;
+          return _this.page.apply(_this, [method, _lodash2.default.defaults({ limit: limit, offset: nextOffset }, params)].concat(args, [iteratee]));
         });
       });
     }

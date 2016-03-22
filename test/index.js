@@ -8,14 +8,21 @@ import config from './config'
 
 const client = new CDO(config.token, config.opts)
 
-test("CDO#unpaginate", t => (
-  client.unpaginate('datacategories').then(ress => {
-    let items = ress.reduce((items, {results}) => [...items, ...results], [])
-    ress.forEach(res => {
-      t.is(items.length, res.metadata.resultset.count)
+test("CDO#page", t => {
+  let ress = []
+  return client
+    .page('datacategories', res => {
+      ress.push(res)
+      return false // keep paging
     })
-  })
-))
+    .then(retval => {
+      t.same(retval, null) // if a truthy value is returned above, retval will be res from that iteration
+      let items = ress.reduce((items, {results}) => [...items, ...results], [])
+      ress.forEach(res => {
+        t.is(items.length, res.metadata.resultset.count)
+      })
+    })
+})
 
 test("/datasets", t => (
   client.datasets().then(({results}) => (
