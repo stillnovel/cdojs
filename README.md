@@ -40,7 +40,7 @@ var client = new CDO('mytoken', {params: {
 }})
 
 // fetch all stations for ZIP code
-let results = []
+var results = []
 client
   .stations({locationid: 'ZIP:00002'}) // "Yukon Flats Nat Wildlife, AK 00002". Not all ZIPs have a station
   .then(stations => (
