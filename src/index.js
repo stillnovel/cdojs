@@ -54,7 +54,7 @@ class CDO {
     let mergedConfig = _.merge({
       baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
       headers: {token: this.token}
-    }, this.opts.config, config)
+    }, this.opts.config, {params: this.opts.params}, config)
     let readableURL = `/${resource}${_.isEmpty(mergedConfig.params)?'':' '}${qs.stringify(mergedConfig.params)}`
     return Promise
       .all([this.secondLimiter(), this.dayLimiter()])

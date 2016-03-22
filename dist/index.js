@@ -165,7 +165,7 @@ var CDO = function () {
       var mergedConfig = _lodash2.default.merge({
         baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
         headers: { token: this.token }
-      }, this.opts.config, config);
+      }, this.opts.config, { params: this.opts.params }, config);
       var readableURL = '/' + resource + (_lodash2.default.isEmpty(mergedConfig.params) ? '' : ' ') + _querystring2.default.stringify(mergedConfig.params);
       return Promise.all([this.secondLimiter(), this.dayLimiter()]).then(function () {
         return (0, _axios2.default)(resource, mergedConfig);
