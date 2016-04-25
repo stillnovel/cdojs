@@ -166,7 +166,10 @@ var CDO = function () {
         baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
         headers: { token: this.token }
       }, this.opts.config, { params: this.opts.params }, config);
-      var readableURL = '/' + resource + (_lodash2.default.isEmpty(mergedConfig.params) ? '' : ' ') + _querystring2.default.stringify(mergedConfig.params);
+      var params = mergedConfig.params || {};['startdate', 'enddate'].forEach(function (prop) {
+        if (prop in params) params[prop] = CDO.formatDate(params[prop]);
+      });
+      var readableURL = '/' + resource + (_lodash2.default.isEmpty(params) ? '' : ' ') + _querystring2.default.stringify(params);
       return Promise.all([this.secondLimiter(), this.dayLimiter()]).then(function () {
         return (0, _axios2.default)(resource, mergedConfig);
       }).catch(function (res) {
@@ -184,6 +187,18 @@ var CDO = function () {
         debug('%s (%s %s)', readableURL, status, statusText);
         return data;
       });
+    }
+  }], [{
+    key: 'formatDate',
+    value: function formatDate(date) {
+      if (typeof date === 'string') return date;
+      date = new Date(date);
+      return date.getUTCFullYear() + '-' + CDO._formatDatePart(date.getUTCMonth() + 1) + '-' + CDO._formatDatePart(date.getUTCDate());
+    }
+  }, {
+    key: '_formatDatePart',
+    value: function _formatDatePart(part) {
+      return _lodash2.default.padStart(part, 2, '0');
     }
   }]);
 

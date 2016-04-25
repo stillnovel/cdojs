@@ -56,7 +56,11 @@ class CDO {
       baseURL: 'http://www.ncdc.noaa.gov/cdo-web/api/v2/',
       headers: {token: this.token}
     }, this.opts.config, {params: this.opts.params}, config)
-    let readableURL = `/${resource}${_.isEmpty(mergedConfig.params)?'':' '}${qs.stringify(mergedConfig.params)}`
+    let params = mergedConfig.params || {}
+    ;['startdate', 'enddate'].forEach(prop => {
+      if (prop in params) params[prop] = CDO.formatDate(params[prop])
+    })
+    let readableURL = `/${resource}${_.isEmpty(params)?'':' '}${qs.stringify(params)}`
     return Promise
       .all([this.secondLimiter(), this.dayLimiter()])
       .then(() => axios(resource, mergedConfig))
@@ -70,6 +74,15 @@ class CDO {
         debug(`%s (%s %s)`, readableURL, status, statusText)
         return data
       })
+  }
+
+  static formatDate (date) {
+    if (typeof date === 'string') return date
+    date = new Date(date)
+    return `${date.getUTCFullYear()}-${CDO._formatDatePart(date.getUTCMonth()+1)}-${CDO._formatDatePart(date.getUTCDate())}`
+  }
+  static _formatDatePart (part) {
+    return _.padStart(part, 2, '0')
   }
 }
 CDO.RATE_LIMIT_EPSILON_MS = 200
