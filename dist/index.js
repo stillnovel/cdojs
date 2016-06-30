@@ -128,8 +128,8 @@ var CDO = function () {
       return this.request('data', _extends({ params: params }, config));
     }
   }, {
-    key: 'page',
-    value: function page(method /*, params={}*/) /*, iteratee */{
+    key: 'all',
+    value: function all(method /*, params={}*/) /*, iteratee */{
       var _method,
           _this = this;
 
@@ -150,7 +150,7 @@ var CDO = function () {
 
           var nextOffset = offset + limit;
           if (nextOffset >= count) return null;
-          return _this.page.apply(_this, [method, _lodash2.default.defaults({ limit: limit, offset: nextOffset }, params)].concat(args, [iteratee]));
+          return _this.all.apply(_this, [method, _lodash2.default.defaults({ limit: limit, offset: nextOffset }, params)].concat(args, [iteratee]));
         });
       });
     }

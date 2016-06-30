@@ -36,7 +36,7 @@ class CDO {
 
   data (params={}, config={}) { return this.request('data', {params, ...config}) }
 
-  page (method/*, params={}*/, ...args/*, iteratee */) {
+  all (method/*, params={}*/, ...args/*, iteratee */) {
     let iteratee = args.pop()
     let params = args.shift() || {}
     if (typeof method === 'string') method = _.get(this, method)
@@ -46,7 +46,7 @@ class CDO {
         let {offset, count, limit} = res.metadata.resultset
         let nextOffset = offset + limit
         if (nextOffset >= count) return null
-        return this.page(method, _.defaults({limit, offset: nextOffset}, params), ...args, iteratee)
+        return this.all(method, _.defaults({limit, offset: nextOffset}, params), ...args, iteratee)
       })
     ))
   }

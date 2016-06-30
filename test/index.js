@@ -8,10 +8,10 @@ import config from './config'
 
 const client = new CDO(config.token, config.opts)
 
-test("CDO#page", t => {
+test("CDO#all", t => {
   let ress = []
   return client
-    .page('datacategories', res => {
+    .all('datacategories', res => {
       ress.push(res)
       return false // keep paging
     })
