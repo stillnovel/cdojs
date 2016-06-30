@@ -1,6 +1,6 @@
 {
   "name": "cdojs",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "JS wrapper for NCEI's Climate Data Online API",
   "homepage": "https://github.com/dbkaplun/cdojs#readme",
   "bugs": "https://github.com/dbkaplun/cdojs/issues",
