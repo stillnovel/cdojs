@@ -29,7 +29,22 @@ client
 Retrieve all 56 kinds of queryable temperature measurements, 25 per page
 (montly mean, daily minimum/maximum, etc):
 ```js
-client.all('datatypes', {datacategoryid: 'TEMP'}, console.log)
+client.all('datatypes', {datacategoryid: 'TEMP'}, console.log) // calls console.log once per page
+```
+
+Alternatively, if you want to page manually:
+```js
+function getTempTypes (params) {
+  if (!params) params = {datacategoryid: 'TEMP'}
+  return client
+    .datatypes(params)
+    .then(page => (
+      page.results.length
+        ? getTempTypes(CDO.paramsForNextPage(params)).then(pages => [page, ...pages])
+        : [page]
+    ))
+}
+getTempTypes().then(console.log)
 ```
 
 Typical usage: fetch all stations for ZIP code, then fetch daily temperatures

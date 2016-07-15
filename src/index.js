@@ -43,12 +43,26 @@ class CDO {
     return method.call(this, params, ...args).then(res => (
       Promise.resolve(iteratee(res)).then(done => {
         if (done) return res
-        let {offset, count, limit} = res.metadata.resultset
-        let nextOffset = offset + limit
-        if (nextOffset >= count) return null
-        return this.all(method, _.defaults({limit, offset: nextOffset}, params), ...args, iteratee)
+        let nextParams = this.constructor.paramsForNextPage(_(res.metadata.resultset)
+          .pick('offset', 'limit')
+          .defaults(params)
+          .value())
+        if (params.offset >= nextParams.offset - nextParams.limit) return null
+        return this.all(method, nextParams, ...args, iteratee)
       })
     ))
+  }
+
+  static paramsForNextPage (currentPageParams) { return CDO._paramsForSiblingPage(currentPageParams, 'next') }
+  static paramsForPrevPage (currentPageParams) { return CDO._paramsForSiblingPage(currentPageParams, 'prev') }
+  static _paramsForSiblingPage (currentPageParams={}, direction) {
+    let {offset, limit=this.DEFAULT_LIMIT} = currentPageParams
+    if (typeof offset !== 'number' || offset < 0) offset = 0
+    else offset = {
+      next: offset + limit,
+      prev: offset - limit
+    }[direction]
+    return _.defaults({offset, limit}, currentPageParams)
   }
 
   request (resource, config={}) {
@@ -86,5 +100,6 @@ class CDO {
   }
 }
 CDO.RATE_LIMIT_EPSILON_MS = 200
+CDO.DEFAULT_LIMIT = 25
 
 module.exports = CDO

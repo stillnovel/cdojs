@@ -143,14 +143,9 @@ var CDO = function () {
       return (_method = method).call.apply(_method, [this, params].concat(args)).then(function (res) {
         return Promise.resolve(iteratee(res)).then(function (done) {
           if (done) return res;
-          var _res$metadata$results = res.metadata.resultset;
-          var offset = _res$metadata$results.offset;
-          var count = _res$metadata$results.count;
-          var limit = _res$metadata$results.limit;
-
-          var nextOffset = offset + limit;
-          if (nextOffset >= count) return null;
-          return _this.all.apply(_this, [method, _lodash2.default.defaults({ limit: limit, offset: nextOffset }, params)].concat(args, [iteratee]));
+          var nextParams = _this.constructor.paramsForNextPage((0, _lodash2.default)(res.metadata.resultset).pick('offset', 'limit').defaults(params).value());
+          if (params.offset >= nextParams.offset - nextParams.limit) return null;
+          return _this.all.apply(_this, [method, nextParams].concat(args, [iteratee]));
         });
       });
     }
@@ -189,6 +184,31 @@ var CDO = function () {
       });
     }
   }], [{
+    key: 'paramsForNextPage',
+    value: function paramsForNextPage(currentPageParams) {
+      return CDO._paramsForSiblingPage(currentPageParams, 'next');
+    }
+  }, {
+    key: 'paramsForPrevPage',
+    value: function paramsForPrevPage(currentPageParams) {
+      return CDO._paramsForSiblingPage(currentPageParams, 'prev');
+    }
+  }, {
+    key: '_paramsForSiblingPage',
+    value: function _paramsForSiblingPage() {
+      var currentPageParams = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var direction = arguments[1];
+      var offset = currentPageParams.offset;
+      var _currentPageParams$li = currentPageParams.limit;
+      var limit = _currentPageParams$li === undefined ? this.DEFAULT_LIMIT : _currentPageParams$li;
+
+      if (typeof offset !== 'number' || offset < 0) offset = 0;else offset = {
+        next: offset + limit,
+        prev: offset - limit
+      }[direction];
+      return _lodash2.default.defaults({ offset: offset, limit: limit }, currentPageParams);
+    }
+  }, {
     key: 'formatDate',
     value: function formatDate(date) {
       if (typeof date === 'string') return date;
@@ -206,5 +226,6 @@ var CDO = function () {
 }();
 
 CDO.RATE_LIMIT_EPSILON_MS = 200;
+CDO.DEFAULT_LIMIT = 25;
 
 module.exports = CDO;

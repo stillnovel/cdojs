@@ -24,6 +24,18 @@ test("CDO#all", t => {
     })
 })
 
+test("CDO.paramsForNextPage, CDO.paramsForPrevPage", t => {
+  t.same({offset: 36, limit: 25}, CDO.paramsForNextPage({offset: 11}))
+  t.same({offset: 11, limit: 25}, CDO.paramsForPrevPage({offset: 36}))
+
+  ;[CDO.paramsForNextPage, CDO.paramsForPrevPage].forEach(fn => {
+    t.same({offset: 0, limit: 25}, fn())
+    t.same({offset: 0, limit: 24}, fn({limit: 24}))
+    t.same({offset: 0, limit: 25}, fn({offset: -1}))
+    t.same({offset: 0, limit: 25, count: 1000}, fn({count: 1000}))
+  })
+})
+
 test("/datasets", t => (
   client.datasets().then(({results}) => (
     client.dataset(results[0].id).then(d => {
