@@ -34,17 +34,16 @@ client.all('datatypes', {datacategoryid: 'TEMP'}, console.log) // calls console.
 
 Alternatively, if you want to page manually:
 ```js
-function getTempTypes (params) {
-  if (!params) params = {datacategoryid: 'TEMP'}
+function getDatatypes (params) {
   return client
     .datatypes(params)
     .then(page => (
-      page.results.length
-        ? getTempTypes(CDO.paramsForNextPage(params)).then(pages => [page, ...pages])
+      (page.results || []).length
+        ? getDatatypes(CDO.paramsForNextPage(params)).then(pages => [page, ...pages])
         : [page]
     ))
 }
-getTempTypes().then(console.log)
+getDatatypes({datacategoryid: 'TEMP'}).then(console.log)
 ```
 
 Typical usage: fetch all stations for ZIP code, then fetch daily temperatures
