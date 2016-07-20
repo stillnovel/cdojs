@@ -32,8 +32,9 @@ Retrieve all 56 kinds of queryable temperature measurements, 25 per page
 client.all('datatypes', {datacategoryid: 'TEMP'}, console.log) // calls console.log once per page
 ```
 
-Alternatively, if you want to page manually:
+Alternatively, to page manually:
 ```js
+getDatatypes({datacategoryid: 'TEMP'}).then(console.log)
 function getDatatypes (params) {
   return client
     .datatypes(params)
@@ -43,7 +44,6 @@ function getDatatypes (params) {
         : [page]
     ))
 }
-getDatatypes({datacategoryid: 'TEMP'}).then(console.log)
 ```
 
 Typical usage: fetch all stations for ZIP code, then fetch daily temperatures
