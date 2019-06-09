@@ -1,6 +1,6 @@
 {
-  "name": "cdojs",
-  "version": "1.4.0",
+  "name": "@stillnovel/cdojs",
+  "version": "1.5.0",
   "description": "JS wrapper for NCEI's Climate Data Online API",
   "homepage": "https://github.com/dbkaplun/cdojs#readme",
   "bugs": "https://github.com/dbkaplun/cdojs/issues",
@@ -11,15 +11,19 @@
     "test": "ava test/index.js"
   },
   "dependencies": {
-    "axios": "0.9.1",
-    "debug": "2.2.0",
-    "lodash": "4.6.1",
+    "axios": "^0.19.0",
+    "braces": "^3.0.2",
+    "debug": "^4.1.1",
+    "lodash": "^4.17.11",
     "rate-limit-promise": "1.0.1"
   },
   "devDependencies": {
-    "ava": "0.13.0",
-    "babel-cli": "6.10.1",
-    "babel-plugin-transform-object-rest-spread": "6.8.0",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "ava": "^2.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
     "babel-preset-es2015": "6.9.0"
   },
   "keywords": [
